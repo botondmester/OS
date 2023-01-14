@@ -8,6 +8,7 @@ begin:
     mov bx, 0x9000
     mov dh, 0x000f
     call disk_read
+    jmp 0x9000
 
 print:
     pusha
