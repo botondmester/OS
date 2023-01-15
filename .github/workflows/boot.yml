@@ -16,8 +16,8 @@ jobs:
 
     - name: Install Dependencies
       run: |
-      sudo apt-get update
-      sudo apt-get install make nasm
+        sudo apt-get update
+        sudo apt-get install make nasm
 
     - name: Make OS
       run: make ./os.bin
