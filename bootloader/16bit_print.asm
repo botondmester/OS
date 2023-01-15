@@ -35,13 +35,13 @@ print_hex:
         je .done
 
         mov ax, dx
-        and ax, 0x000f # mask ax
-        add ax, 0x30 # convert N to ascii "N"
-        cmp ax, 0x39 # if it's > 9 then add 7 to represent 'A' to 'F'
+        and ax, 0x000f ; mask ax
+        add ax, 0x30 ; convert N to ascii "N"
+        cmp ax, 0x39 ; if it's > 9 then add 7 to represent 'A' to 'F'
         jle step2
         add ax, 7
     .step2:
-        mov bx, .HEX_OUT + 5 # put the character in the right place
+        mov bx, .HEX_OUT + 5 ; put the character in the right place
         sub bx, cx
         mov [bx], al
         ror dx, 4

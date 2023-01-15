@@ -6,28 +6,28 @@ begin:
     mov sp, bp
 
     mov bx, 0x9000
-    mov dh, 0x0002 # load 2 sectors for stage 2
+    mov dh, 0x0002 ; load 2 sectors for stage 2
     call disk_read
     jmp 0x9000
 
 %include "16bit_print.asm"
 
 disk_read:
-    # args:
-    #   dl: drive number
-    #   dh: sectors to read
+    ; args:
+    ;   dl: drive number
+    ;   dh: sectors to read
     pusha
     
     push dx
 
-    mov ah, 0x02 # read
-    mov al, dh   # sectors to read
-    mov cl, 0x02 # read from sector 2
-    mov ch, 0x00 # cylinder 0
-    mov dh, 0x00 # head 0
-    # dl is set by caller
+    mov ah, 0x02 ; read
+    mov al, dh   ; sectors to read
+    mov cl, 0x02 ; read from sector 2
+    mov ch, 0x00 ; cylinder 0
+    mov dh, 0x00 ; head 0
+    ; dl is set by caller
 
-    int 0x13 # int 13h
+    int 0x13 ; int 13h
     jc .read_error
 
     pop dx
