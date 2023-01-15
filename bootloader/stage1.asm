@@ -20,4 +20,4 @@ cls:
 
 %include "16bit_print.asm"
 
-times 2048 - ($-$$) db 0
+times 1024 - ($-$$) db 0
