@@ -1,18 +1,18 @@
 kernel_source_files := $(shell find kernel -name *.c)
-kernel_object_files := $(patsubst kernel/%.c, build/kernel/%.o, $(kernel_source_files))
+kernel_object_files := $(patsubst kernel/%.c, build/x86_64/%.o, $(kernel_source_files))
 
 kernel_asm_source := $(shell find kernel -name *.asm)
-kernel_asm_object := $(patsubst kernel/%.asm, build/kernel/%.o, $(kernel_asm_source))
+kernel_asm_object := $(patsubst kernel/%.asm, build/x86_64/%.o, $(kernel_asm_source))
 
 all: build-x86_64
 
-$(kernel_object_files): build/kernel/%.o : kernel/%.c
+$(kernel_object_files): build/x86_64/%.o : kernel/%.c
 	mkdir -p $(dir $@) && \
-	x86_64-elf-gcc -c -I src/intf -ffreestanding $(patsubst build/kernel/%.o, kernel/%.c, $@) -o $@
+	x86_64-elf-gcc -c -I src/intf -ffreestanding $(patsubst build/x86_64/%.o, kernel/%.c, $@) -o $@
 
-$(kernel_asm_object):  build/kernel/%.o : kernel/%.asm
+$(kernel_asm_object):  build/x86_64/%.o : kernel/%.asm
 	mkdir -p $(dir $@) && \
-	nasm -f elf64 $(patsubst build/kernel/%.o, kernel/%.asm, $@) -o $@
+	nasm -f elf64 $(patsubst build/x86_64/%.o, kernel/%.asm, $@) -o $@
 
 .PHONY: build-x86_64
 build-x86_64: $(kernel_asm_object) $(kernel_object_files)
