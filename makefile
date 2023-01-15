@@ -11,3 +11,4 @@ run: os.bin
 
 clean:
 	rm -f os.bin
+	cd bootloader && $(MAKE) clean
