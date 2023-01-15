@@ -9,6 +9,6 @@ run: os.bin
 	qemu-system-i386 os.bin
 
 clean:
-	rm os.bin
+	rm -f os.bin
 
 all: clean run

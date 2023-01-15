@@ -5,4 +5,4 @@ all: stage0.bin stage1.bin
 	nasm -f bin $< -o $@
 
 clean:
-	rm *.bin
+	rm -f *.bin
