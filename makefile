@@ -1,4 +1,5 @@
 kernel_source_files := $(shell find kernel -name *.c)
+kernel_header_files := $(shell find kernel -name *.h)
 kernel_object_files := $(patsubst kernel/%.c, build/x86_64/%.o, $(kernel_source_files))
 
 kernel_asm_source := $(shell find kernel -name *.asm)
@@ -8,7 +9,7 @@ all: build-x86_64
 
 $(kernel_object_files): build/x86_64/%.o : kernel/%.c
 	mkdir -p $(dir $@) && \
-	x86_64-elf-gcc -c -I src/intf -ffreestanding $(patsubst build/x86_64/%.o, kernel/%.c, $@) -o $@
+	x86_64-elf-gcc -c -I kernel -ffreestanding $(patsubst build/x86_64/%.o, kernel/%.c, $@) -o $@
 
 $(kernel_asm_object):  build/x86_64/%.o : kernel/%.asm
 	mkdir -p $(dir $@) && \
