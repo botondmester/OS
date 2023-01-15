@@ -10,3 +10,5 @@ begin:
     .msg: db "Stage1 loaded!", 0
 
 %include "16bit_print.asm"
+
+times 1024 - ($-$$) db 0

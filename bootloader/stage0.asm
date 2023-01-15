@@ -6,7 +6,7 @@ begin:
     mov sp, bp
 
     mov bx, 0x9000
-    mov dh, 0x000f
+    mov dh, 0x0002 # load 2 sectors for stage 2
     call disk_read
     jmp 0x9000
 
