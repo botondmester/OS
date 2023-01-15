@@ -28,7 +28,7 @@ disk_read:
     ; dl is set by caller
 
     int 0x13 ; int 13h
-    jc .read_error
+    jc .disk_error
 
     pop dx
 
