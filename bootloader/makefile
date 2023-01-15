@@ -1,4 +1,4 @@
-all: stage0.bin #stage1.bin
+all: stage0.bin stage1.bin
 	cat $< > bootloader.bin
 
 %.bin: %.asm
