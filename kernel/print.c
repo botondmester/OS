@@ -8,6 +8,7 @@ struct Char {
     uint8_t color;
 };
 
+// Video Memory begins at 0x000B8000
 struct Char* buffer = (struct Char*) 0xb8000;
 size_t col = 0;
 size_t row = 0;
@@ -67,12 +68,46 @@ void print_char(char character) {
 }
 
 void print_str(char* str) {
-    for (size_t i = 0; 1; i++) {
+    for (size_t i = 0;; i++) {
         char character = (uint8_t) str[i];
 
         if (character == '\0') {
             return;
         }
+
+        print_char(character);
+    }
+}
+
+void print_hex32(uint32_t hex) {
+    print_char('0');
+    print_char('x');
+    for (size_t i = 8; i > 0; i--) {
+        char character = (hex >> (i*4-4)) & 0xF;
+        character += 48;
+        if(character > 57) character += 7;
+
+        print_char(character);
+    }
+}
+void print_hex18(uint16_t hex) {
+    print_char('0');
+    print_char('x');
+    for (size_t i = 4; i > 0; i--) {
+        char character = (hex >> (i*4-4)) & 0xF;
+        character += 48;
+        if(character > 57) character += 7;
+
+        print_char(character);
+    }
+}
+void print_hex8(uint8_t hex) {
+    print_char('0');
+    print_char('x');
+    for (size_t i = 2; i > 0; i--) {
+        char character = (hex >> (i*4-4)) & 0xF;
+        character += 48;
+        if(character > 57) character += 7;
 
         print_char(character);
     }
