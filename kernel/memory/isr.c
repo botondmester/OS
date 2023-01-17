@@ -27,15 +27,17 @@ void isr_handler(registers_t regs)
 
 void irq_handler(registers_t regs)
 {
-    if (regs.int_no >= 40)
+    uint32_t tmp = regs.int_no;
+    uint8_t int_no = tmp;
+    if (int_no >= 40)
     {
         outb(0xA0, 0x20);
     }
     outb(0x20, 0x20);
 
-    if (interrupt_handlers[regs.int_no] != 0)
+    if (interrupt_handlers[int_no] != 0)
     {
-        isr_t handler = interrupt_handlers[regs.int_no];
+        isr_t handler = interrupt_handlers[int_no];
         handler(regs);
     }
 }

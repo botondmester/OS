@@ -17,7 +17,6 @@ void timer_callback(registers_t regs)
 
 void init_timer(uint32_t frequency)
 {
-    // Firstly, register our timer callback.
     register_interrupt_handler(IRQ0, &timer_callback);
 
     // The value we send to the PIT is the value to divide it's input clock
@@ -27,6 +26,7 @@ void init_timer(uint32_t frequency)
 
     // Send the command byte.
     outb(0x43, 0x36);
+    io_wait();
 
     // Divisor has to be sent byte-wise, so split here into upper/lower bytes.
     uint8_t l = (uint8_t)(divisor & 0xFF);
@@ -34,5 +34,7 @@ void init_timer(uint32_t frequency)
 
     // Send the frequency divisor.
     outb(0x40, l);
+    io_wait();
     outb(0x40, h);
+    io_wait();
 }

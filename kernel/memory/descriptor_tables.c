@@ -1,6 +1,7 @@
 #include "descriptor_tables.h"
 #include <stdint.h>
 #include "print.h"
+#include "memory/memory.h"
 
 typedef enum {
     GDT_ACCESS_CODE_READABLE        = 0x02,
@@ -101,23 +102,53 @@ static void idt_set_gate(uint32_t num, uint32_t base, uint16_t sel, uint8_t flag
     g_IDT[num].Flags = flags /* | 0x60 */;
 }
 
+#define PIC1		0x20		/* IO base address for master PIC */
+#define PIC2		0xA0		/* IO base address for slave PIC */
+#define PIC1_COMMAND	PIC1
+#define PIC1_DATA	(PIC1+1)
+#define PIC2_COMMAND	PIC2
+#define PIC2_DATA	(PIC2+1)
+
+#define ICW1_ICW4	0x01		/* ICW4 (not) needed */
+#define ICW1_SINGLE	0x02		/* Single (cascade) mode */
+#define ICW1_INTERVAL4	0x04		/* Call address interval 4 (8) */
+#define ICW1_LEVEL	0x08		/* Level triggered (edge) mode */
+#define ICW1_INIT	0x10		/* Initialization - required! */
+ 
+#define ICW4_8086	0x01		/* 8086/88 (MCS-80/85) mode */
+#define ICW4_AUTO	0x02		/* Auto (normal) EOI */
+#define ICW4_BUF_SLAVE	0x08		/* Buffered mode/slave */
+#define ICW4_BUF_MASTER	0x0C		/* Buffered mode/master */
+#define ICW4_SFNM	0x10		/* Special fully nested (not) */
+
 void IDT_Initialize() {
     // set the whole thing to null
     for (char* i = g_IDT; i < g_IDT + sizeof(g_IDT); i++)
     {
         *i = 0;
     }
-    // remap irq table
-    outb(0x20, 0x11);
-    outb(0xA0, 0x11);
-    outb(0x21, 0x20);
-    outb(0xA1, 0x28);
-    outb(0x21, 0x04);
-    outb(0xA1, 0x02);
-    outb(0x21, 0x01);
-    outb(0xA1, 0x01);
-    outb(0x21, 0x0);
-    outb(0xA1, 0x0);
+	outb(PIC1_COMMAND, ICW1_INIT | ICW1_ICW4);  // starts the initialization sequence (in cascade mode)
+	io_wait();
+	outb(PIC2_COMMAND, ICW1_INIT | ICW1_ICW4);
+	io_wait();
+	outb(PIC1_DATA, 0x20);                 // ICW2: Master PIC vector offset
+	io_wait();
+	outb(PIC2_DATA, 0x28);                 // ICW2: Slave PIC vector offset
+	io_wait();
+	outb(PIC1_DATA, 4);                       // ICW3: tell Master PIC that there is a slave PIC at IRQ2 (0000 0100)
+	io_wait();
+	outb(PIC2_DATA, 2);                       // ICW3: tell Slave PIC its cascade identity (0000 0010)
+	io_wait();
+ 
+	outb(PIC1_DATA, ICW4_8086);
+	io_wait();
+	outb(PIC2_DATA, ICW4_8086);
+	io_wait();
+ 
+	outb(PIC1_DATA, 0x00);
+	io_wait();
+    outb(PIC2_DATA, 0x00);
+    io_wait();
     // set up all the required gates
     idt_set_gate( 0, (uint32_t)isr0 , 0x08, 0x8E);
     idt_set_gate( 1, (uint32_t)isr1 , 0x08, 0x8E);
@@ -174,6 +205,8 @@ void IDT_Initialize() {
 }
 
 void init_descriptor_tables(){
+    cli();
     GDT_Initialize();
     IDT_Initialize();
+    sti();
 }
