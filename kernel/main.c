@@ -11,9 +11,9 @@ kmain(){
     initialise_paging();
     print_str("And now we are paging!\n");
     //asm volatile ("int $0x3"); // artificially trigger int 0x3
-    //init_timer(50);
+    //init_timer(50); // init PIT at 100hz
 
-    uint32_t *ptr = (uint32_t*)0xA0000000;
+    uint32_t *ptr = (uint32_t*)0xA0000000; // artifial page fault
     uint32_t do_page_fault = *ptr;
 
     return 0;
