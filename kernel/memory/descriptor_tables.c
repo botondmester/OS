@@ -1,5 +1,6 @@
 #include "descriptor_tables.h"
 #include <stdint.h>
+#include "print.h"
 
 typedef enum {
     GDT_ACCESS_CODE_READABLE        = 0x02,
@@ -102,10 +103,21 @@ static void idt_set_gate(uint32_t num, uint32_t base, uint16_t sel, uint8_t flag
 
 void IDT_Initialize() {
     // set the whole thing to null
-    for (char* i = g_IDT; i < sizeof(g_IDT); i++)
+    for (char* i = g_IDT; i < g_IDT + sizeof(g_IDT); i++)
     {
         *i = 0;
     }
+    // remap irq table
+    outb(0x20, 0x11);
+    outb(0xA0, 0x11);
+    outb(0x21, 0x20);
+    outb(0xA1, 0x28);
+    outb(0x21, 0x04);
+    outb(0xA1, 0x02);
+    outb(0x21, 0x01);
+    outb(0xA1, 0x01);
+    outb(0x21, 0x0);
+    outb(0xA1, 0x0);
     // set up all the required gates
     idt_set_gate( 0, (uint32_t)isr0 , 0x08, 0x8E);
     idt_set_gate( 1, (uint32_t)isr1 , 0x08, 0x8E);
@@ -139,6 +151,24 @@ void IDT_Initialize() {
     idt_set_gate(29, (uint32_t)isr29, 0x08, 0x8E);
     idt_set_gate(30, (uint32_t)isr30, 0x08, 0x8E);
     idt_set_gate(31, (uint32_t)isr31, 0x08, 0x8E);
+    //--------------------------------------------
+    // set up irq gates
+    idt_set_gate(32, (uint32_t)irq0, 0x08, 0x8E);
+    idt_set_gate(33, (uint32_t)irq1, 0x08, 0x8E);
+    idt_set_gate(34, (uint32_t)irq2, 0x08, 0x8E);
+    idt_set_gate(35, (uint32_t)irq3, 0x08, 0x8E);
+    idt_set_gate(36, (uint32_t)irq4, 0x08, 0x8E);
+    idt_set_gate(37, (uint32_t)irq5, 0x08, 0x8E);
+    idt_set_gate(38, (uint32_t)irq6, 0x08, 0x8E);
+    idt_set_gate(39, (uint32_t)irq7, 0x08, 0x8E);
+    idt_set_gate(40, (uint32_t)irq8, 0x08, 0x8E);
+    idt_set_gate(41, (uint32_t)irq9, 0x08, 0x8E);
+    idt_set_gate(42, (uint32_t)irq10, 0x08, 0x8E);
+    idt_set_gate(43, (uint32_t)irq11, 0x08, 0x8E);
+    idt_set_gate(44, (uint32_t)irq12, 0x08, 0x8E);
+    idt_set_gate(45, (uint32_t)irq13, 0x08, 0x8E);
+    idt_set_gate(46, (uint32_t)irq14, 0x08, 0x8E);
+    idt_set_gate(47, (uint32_t)irq15, 0x08, 0x8E);
 
     IDT_Load(&g_IDTDescriptor);
 }
