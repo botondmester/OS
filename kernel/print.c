@@ -112,6 +112,33 @@ void print_hex8(uint8_t hex) {
         print_char(character);
     }
 }
+void print_dec(uint32_t n){
+    if (n == 0)
+    {
+        print_char('0');
+        return;
+    }
+
+    int32_t acc = n;
+    char c[32];
+    int i = 0;
+    while (acc > 0)
+    {
+        c[i] = '0' + acc%10;
+        acc /= 10;
+        i++;
+    }
+    c[i] = 0;
+
+    char c2[32];
+    c2[i--] = 0;
+    int j = 0;
+    while(i >= 0)
+    {
+        c2[i--] = c[j++];
+    }
+    print_str(c2);
+}
 
 void print_set_color(uint8_t foreground, uint8_t background) {
     color = foreground + (background << 4);

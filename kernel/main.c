@@ -1,7 +1,7 @@
 #include "print.h"
 #include "memory/descriptor_tables.h"
 #include "timer.h"
-#include "memory/paging.h"
+#include "memory/memory.h"
 
 kmain(){
     print_clear();
@@ -13,8 +13,17 @@ kmain(){
     //asm volatile ("int $0x3"); // artificially trigger int 0x3
     //init_timer(50); // init PIT at 100hz
 
-    uint32_t *ptr = (uint32_t*)0xA0000000; // artifial page fault
-    uint32_t do_page_fault = *ptr;
+    uint32_t a = kmalloc(8);
+    uint32_t b = kmalloc(8);
+    print_hex32(a);
+    print_char('\n');
+    print_hex32(b);
+    print_char('\n');
+    kfree(a);
+    kfree(b);
+    uint32_t c = kmalloc(12);
+    print_hex32(b);
+    print_char('\n');
 
     return 0;
 }
